@@ -137,6 +137,12 @@ class TrackHandler(AbletonOSCHandler):
         def track_get_device_names(track, _):
             return tuple(device.name for device in track.devices)
 
+        def track_get_devices(track, _):
+            result = [item for device in track.devices for item in (device.name, device.type, device.class_name, str(device._live_ptr))]
+            self.logger.warning("GET DEVICES: %s" % len(track.devices))
+            # return tuple(result)
+            return result
+
         def track_get_device_types(track, _):
             return tuple(device.type for device in track.devices)
 
@@ -152,6 +158,7 @@ class TrackHandler(AbletonOSCHandler):
          - class_name: e.g. Operator, Reverb, AuPluginDevice, PluginDevice, InstrumentGroupDevice
         """
         self.osc_server.add_handler("/live/track/get/num_devices", create_track_callback(track_get_num_devices))
+        self.osc_server.add_handler("/live/track/get/devices", create_track_callback(track_get_devices))
         self.osc_server.add_handler("/live/track/get/devices/name", create_track_callback(track_get_device_names))
         self.osc_server.add_handler("/live/track/get/devices/type", create_track_callback(track_get_device_types))
         self.osc_server.add_handler("/live/track/get/devices/class_name", create_track_callback(track_get_device_class_names))

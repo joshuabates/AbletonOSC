@@ -120,6 +120,8 @@ class SongHandler(AbletonOSCHandler):
                     if obj == "track":
                         if property_name == "num_devices":
                             value = len(track.devices)
+                        elif property_name == "id":
+                            value = str(track._live_ptr)
                         else:
                             value = getattr(track, property_name)
                             if isinstance(value, Live.Track.Track):
@@ -136,7 +138,10 @@ class SongHandler(AbletonOSCHandler):
                                 rv.append(None)
                     elif obj == "device":
                         for device in track.devices:
-                            rv.append(getattr(device, property_name))
+                            if property_name == "id":
+                                rv.append(str(device._live_ptr))
+                            else:
+                                rv.append(getattr(device, property_name))
                     else:
                         self.logger.error("Unknown object identifier in get/track_data: %s" % obj)
             return tuple(rv)
