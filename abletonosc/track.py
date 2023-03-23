@@ -14,6 +14,8 @@ class TrackHandler(AbletonOSCHandler):
             def track_callback(params: Tuple[Any]):
                 track_index = int(params[0])
                 track = self.song.tracks[track_index]
+                self.logger.warning("EMPTY DEVICES: %s" % track.name)
+
                 if include_track_id:
                     rv = func(track, *args, tuple(params[0:]))
                 else:
@@ -21,6 +23,8 @@ class TrackHandler(AbletonOSCHandler):
 
                 if rv:
                     return (track_index, *rv)
+                else:
+                    return (track_index, None)
 
             return track_callback
 
@@ -138,6 +142,9 @@ class TrackHandler(AbletonOSCHandler):
             return tuple(device.name for device in track.devices)
 
         def track_get_devices(track, _):
+            if len(track.devices) == 0:
+                self.logger.warning("EMPTY DEVICES: %s" % track.name)
+                return []
             result = [item for device in track.devices for item in (device.name, device.type, device.class_name, str(device._live_ptr))]
             self.logger.warning("GET DEVICES: %s" % len(track.devices))
             # return tuple(result)
